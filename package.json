@@ -1,0 +1,42 @@
+{
+  "name": "kai-portfolio",
+  "version": "1.0.0",
+  "description": "Personal portfolio website for Jia-Kai Dong - EE Student & AI Researcher at NTU",
+  "main": "dist/main.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "serve": "python3 -m http.server 8080",
+    "start": "npm run build && npm run serve",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "portfolio",
+    "typescript",
+    "ai",
+    "machine-learning",
+    "student",
+    "ntu",
+    "photography"
+  ],
+  "author": {
+    "name": "Jia-Kai Dong",
+    "email": "kaipnob@gmail.com",
+    "url": "https://github.com/snooow1029"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snooow1029/wp1141.git"
+  },
+  "bugs": {
+    "url": "https://github.com/snooow1029/wp1141/issues"
+  },
+  "homepage": "https://github.com/snooow1029/wp1141#readme"
+}
