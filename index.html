@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kai's - personal webpage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Libre Baskerville', 'Noto Serif TC', serif;
+            background: #000;
+            color: #fff;
+        }
+
+        /* 翻頁容器 */
+        .page-container {
+            position: fixed; /* 改成 fixed 確保完全控制定位 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden; /* 改回 hidden 避免滾動條 */
+        }
+
+        /* 頁面 */
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100vh;
+            top: 0; /* 確保頁面從頂部開始 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #fff; /* 改成白色背景 */
+            left: 100vw; /* 使用 left 而不是 transform */
+            z-index: 1; /* 預設較低的層級 */
+        }
+
+        /* 翻頁動畫 */
+        .page.active {
+            left: 0 !important; /* 強制設定到左邊0位置 */
+            z-index: 10; /* 活動頁面最高層級 */
+        }
+
+        .page.prev {
+            left: -100vw;
+            z-index: 1;
+        }
+
+        .page.next {
+            left: 100vw;
+            z-index: 1;
+        }
+
+        /* 導航列 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .nav-logo {
+            font-family: 'Bodoni MT', 'Noto Sans TC', 'Times New Roman', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Bodoni MT', 'Noto Sans TC', 'Times New Roman', serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            opacity: 1;
+            color: #fff;
+        }
+
+        /* 語言切換按鈕 */
+        .language-toggle {
+            margin-left: 2rem;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            color: #fff;
+            padding: 8px 16px;
+            font-family: 'Bodoni MT', 'Noto Sans TC', 'Times New Roman', serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 50px;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #fff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* 頁面內容 */
+        .page-content {
+            text-align: center;
+            max-width: 800px;
+            padding: 20px 40px;
+            position: relative;
+            z-index: 100;
+            max-height: 90vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* 隱藏滾動條但保持滾動功能 */
+        .page-content::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .page-content {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* About頁面特殊樣式 */
+        .about-page .page-content {
+            max-width: 1000px;
+            justify-content: flex-start;
+            padding-top: 120px;
+        }
+
+        /* Portfolio頁面特殊樣式 */
+        .portfolio-page .page-content {
+            max-width: 1000px;
+            justify-content: flex-start;
+            padding-top: 120px;
+        }
+
+        /* Contact頁面特殊樣式 */
+        .contact-page .page-content {
+            max-width: 1000px;
+            justify-content: flex-start;
+            padding-top: 120px;
+        }
+
+        .page-title {
+            font-family: 'Bodoni MT', 'Noto Sans TC', 'Times New Roman', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            color: #fff !important;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        /* 非首頁的文字顏色 */
+        .about-page .page-title,
+        .portfolio-page .page-title,
+        .project-page .page-title,
+        .contact-page .page-title {
+            color: #fff !important;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            font-family: 'Bodoni MT', 'Noto Sans TC', 'Times New Roman', serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .page-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.4;
+            color: #fff !important;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .about-page .page-subtitle,
+        .portfolio-page .page-subtitle,
+        .project-page .page-subtitle,
+        .contact-page .page-subtitle {
+            color: #fff !important;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+            font-family: 'Bodoni MT', 'Noto Sans TC', 'Times New Roman', serif;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .page-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            color: #fff !important;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .about-page .page-description,
+        .portfolio-page .page-description,
+        .project-page .page-description,
+        .contact-page .page-description {
+            color: #fff !important;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+            font-family: 'Libre Baskerville', 'Noto Serif TC', serif;
+            font-weight: 400;
+        }
+
+        /* 按鈕樣式 */
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            color: #fff !important;
+            text-decoration: none;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: left 0.3s ease;
+        }
+
+        .btn:hover::before {
+            left: 0;
+        }
+
+        .btn:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* 特定頁面樣式 */
+        .home-page {
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .home-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 5; /* 降低層級，不要干擾其他頁面 */
+        }
+
+        /* 輪播背景圖片 */
+        .background-slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .background-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+
+        .background-slide.active {
+            opacity: 1;
+        }
+
+        .about-page, .portfolio-page, .project-page, .contact-page {
+            background: #000 !important; /* 改成黑色背景 */
+        }
+
+        /* 作品集網格 */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 2rem;
+        }
+
+        .portfolio-item {
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            height: 350px;
+            display: flex;
+            align-items: flex-end;
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), box-shadow 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            filter: grayscale(100%) contrast(1.1);
+        }
+
+        .portfolio-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            filter: grayscale(20%) contrast(1);
+        }
+
+        .portfolio-item .item-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 10%, rgba(0,0,0,0) 100%);
+            padding: 4rem 1.5rem 1.5rem;
+            transform: translateY(60%);
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            color: #fff;
+        }
+
+        .portfolio-item:hover .item-overlay {
+            transform: translateY(0);
+        }
+
+        .portfolio-item h3, .portfolio-item p {
+            margin: 0;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+        }
+
+        .portfolio-item h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+            margin-bottom: 0.5rem;
+        }
+
+        .portfolio-item p {
+            font-size: clamp(0.9rem, 1vw + 0.5rem, 1.1rem);
+            opacity: 0.8;
+            max-width: 90%;
+        }
+
+        .portfolio-item:hover p {
+            opacity: 1;
+        }
+
+        /* 聯絡表單 */
+        .contact-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-bottom-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 20px;
+            }
+
+            .nav-menu {
+                gap: 20px;
+            }
+
+            .nav-link {
+                font-size: 0.8rem;
+            }
+
+            .page-content {
+                padding: 10px 20px;
+                max-height: 85vh;
+            }
+
+            .about-page .page-content {
+                max-width: 95%;
+                padding-top: 100px;
+            }
+
+            .portfolio-page .page-content {
+                max-width: 95%;
+                padding-top: 100px;
+            }
+
+            .contact-page .page-content {
+                max-width: 95%;
+                padding-top: 100px;
+            }
+
+            .page-title {
+                font-size: clamp(2rem, 8vw, 3rem);
+                margin-bottom: 1rem;
+            }
+
+            .page-subtitle {
+                font-size: clamp(0.9rem, 4vw, 1.2rem);
+                margin-bottom: 1.5rem;
+            }
+
+            .page-description {
+                font-size: 0.9rem;
+                margin-bottom: 1.5rem;
+            }
+
+            /* 手機端電影卡片優化 */
+            .about-page .page-description div[style*="grid-template-columns"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            
+            .about-page .page-description img {
+                height: 150px !important;
+            }
+
+            /* 手機端Contact頁面優化 */
+            .contact-page .page-content div[style*="max-width: 500px"] {
+                max-width: 95% !important;
+            }
+            
+            .contact-page .page-content a {
+                padding: 10px 15px !important;
+                font-size: 0.9rem !important;
+            }
+        }
+
+        /* Timeline Styles */
+        .timeline-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, 
+                rgba(255, 255, 255, 0.8) 0%, 
+                rgba(255, 255, 255, 0.5) 50%, 
+                rgba(255, 255, 255, 0.2) 100%);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+
+        .timeline-item:nth-child(odd) {
+            transform: translateY(30px) translateX(-30px);
+        }
+
+        .timeline-item:nth-child(even) {
+            transform: translateY(30px) translateX(30px);
+        }
+
+        .timeline-item.is-visible {
+            opacity: 1;
+            transform: translateY(0) translateX(0);
+        }
+
+        .timeline-node {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 1.5rem;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            background: transparent;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content {
+            width: 45%;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: auto;
+            margin-right: 55%;
+            text-align: right;
+            border-right: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: 55%;
+            text-align: left;
+            border-left: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Arrow connectors */
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            top: 1.5rem;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::before {
+            right: -10px;
+            border-left: 10px solid rgba(255, 255, 255, 0.1);
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::before {
+            left: -10px;
+            border-right: 10px solid rgba(255, 255, 255, 0.1);
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+
+        .timeline-content h4 {
+            color: #fff;
+            margin-bottom: 0.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .timeline-date {
+            color: #ccc;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .timeline-description {
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        /* Hover effect for timeline nodes */
+        .timeline-item:hover .timeline-node {
+            background: #fff;
+            border-color: #fff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .timeline-container {
+                padding: 1rem;
+            }
+
+            .timeline-line {
+                left: 30px;
+            }
+
+            .timeline-item {
+                margin-bottom: 2rem;
+            }
+
+            .timeline-item:nth-child(odd),
+            .timeline-item:nth-child(even) {
+                transform: translateY(30px);
+            }
+
+            .timeline-node {
+                left: 30px;
+                transform: translateX(-50%);
+            }
+
+            .timeline-item:nth-child(odd) .timeline-content,
+            .timeline-item:nth-child(even) .timeline-content {
+                width: calc(100% - 60px);
+                margin-left: 60px;
+                margin-right: 0;
+                text-align: left;
+                border-left: 3px solid rgba(255, 255, 255, 0.3);
+                border-right: none;
+            }
+
+            .timeline-item:nth-child(odd) .timeline-content::before,
+            .timeline-item:nth-child(even) .timeline-content::before {
+                left: -10px;
+                right: auto;
+                border-right: 10px solid rgba(255, 255, 255, 0.1);
+                border-left: none;
+                border-top: 8px solid transparent;
+                border-bottom: 8px solid transparent;
+            }
+        }
+
+        /* 紋理效果 */
+        .texture-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+            background-size: 50px 50px, 80px 80px;
+            pointer-events: none;
+            opacity: 0.5;
+            z-index: 5;
+        }
+
+        /* 光影效果 */
+        .light-effect {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 6s ease-in-out infinite;
+            z-index: 5;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, -20px) scale(1.1); }
+        }
+
+        /* 載入動畫 */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <!-- 載入畫面 -->
+    <div class="loading" id="loading">
+        <div class="loading-text">LOADING</div>
+    </div>
+
+    <!-- 導航列 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">Kai.D</a>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-page="0" data-zh="首頁" data-en="Home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="1" data-zh="關於我" data-en="About">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="2" data-zh="作品集" data-en="Portfolio">Portfolio</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="3" data-zh="聯絡" data-en="Contact">Contact</a>
+                </li>
+            </ul>
+            <div class="language-toggle">
+                <button class="lang-btn" onclick="toggleLanguage()">
+                    <span id="current-lang">EN</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 翻頁容器 -->
+    <div class="page-container" id="pageContainer">
+        <!-- Home 頁面 -->
+        <div class="page home-page active" data-page="0">
+            <div class="background-slideshow">
+                <div class="background-slide active" style="background-image: url('assets/深瀨昌久_學生.png');"></div>
+                <div class="background-slide" style="background-image: url('assets/深瀨昌久_鴉.jpeg');"></div>
+                <div class="background-slide" style="background-image: url('assets/DSC04162-1.jpg');"></div>
+                <div class="background-slide" style="background-image: url('assets/DSC04190-1.jpg');"></div>
+            </div>
+            <div class="page-content">
+                <h1 class="page-title" data-zh="Kai's personal page" data-en="Kai's Portfolio">Kai's Portfolio</h1>
+                <p class="page-subtitle" data-zh="" data-en="EE Student & AI Learner">EE Student & AI Learner</p>
+                <p class="page-description" data-zh="對人工智慧、機器學習和語音處理技術充滿熱忱的學習者。目前在台大李宏毅教授實驗室進行研究，並在台達電擔任LLM Agent團隊實習生(但沒有台達的股票)，持續探索AI技術的各種可能性。" data-en="A passionate learner exploring AI, machine learning, and speech processing technologies. Currently conducting research at Prof. Hung-Yi Lee's lab at NTU and interning with the LLM Agent Team at Delta Electronics, continuously discovering the possibilities of AI technologies.">
+                    A passionate learner exploring AI, machine learning, and speech processing technologies. Currently conducting research at Prof. Hung-Yi Lee's lab at NTU and interning with the LLM Agent Team at Delta Electronics, continuously discovering the possibilities of AI technologies.
+                </p>
+                <div style="margin: 2rem 0;">
+                    <span style="font-size: 3rem; opacity: 0.3; color: #fff;">✦</span>
+                </div>
+                <a href="#" class="btn" data-page="2" data-zh="查看作品集" data-en="View Portfolio">View Portfolio</a>
+            </div>
+        </div>
+
+        <!-- About 頁面  -->
+        <div class="page about-page" data-page="1">
+            <div class="page-content">
+                <h1 class="page-title" data-zh="關於我" data-en="About Me">About Me</h1>
+                <p class="page-subtitle" data-zh="電機系學生與AI學習者" data-en="EE Student & AI Learner">EE Student & AI Learner</p>
+                <div class="page-description" style="text-align: left; max-width: 900px; width: 100%;">
+                    <p style="margin-bottom: 1rem;">
+                        <span data-zh="我是" data-en="I am">I am</span> <strong><span data-zh="董家愷" data-en="Jia-Kai Dong">Jia-Kai Dong</span></strong><span data-zh="，台灣大學電機工程學系四年級學生。我在語音識別和語音處理方面有實作經驗，精通Python並具備機器學習建模的基礎技術。" data-en=", a senior student in the Department of Electrical Engineering at National Taiwan University. I have hands-on experience in audio recognition and speech processing, with strong proficiency in Python and fundamental machine learning modeling techniques.">, a senior student in the Department of Electrical Engineering at National Taiwan University. I have hands-on experience in audio recognition and speech processing, with strong proficiency in Python and fundamental machine learning modeling techniques.</span>
+                    </p>
+                    
+                    <p style="margin-bottom: 1rem;" data-zh="目前我在台達電LLM Agent團隊實習，參與MCP相關專案的開發工作。" data-en="Currently, I am an intern in the LLM Agent Team at Delta Electronics, working on projects related to Model Context Protocol (MCP).">
+                        Currently, I am an intern in the LLM Agent Team at Delta Electronics, working on projects related to Model Context Protocol (MCP).
+                    </p>
+                    
+                    <p style="margin-bottom: 2rem;" data-zh="我也在李宏毅教授的SPML lab進行研究，主題與Audio Language Model中的資料洩漏有關。" data-en="In the summer of 2024, I interned at the Music Information Retrieval Lab at Academia Sinica under Dr. Li Su, where I worked on speech-related machine learning tasks. I am now conducting research at the Speech Processing and Machine Learning Lab under Prof. Hung-Yi Lee, focusing on advanced AI models for speech processing.">
+                        In the summer of 2024, I interned at the Music Information Retrieval Lab at Academia Sinica under Dr. Li Su, where I worked on speech-related machine learning tasks. I am now conducting research at the Speech Processing and Machine Learning Lab under Prof. Hung-Yi Lee, focusing on advanced AI models for speech processing.
+                    </p>
+
+                    <h3 style="font-family: 'Playfair Display', serif; color: #fff; margin-bottom: 1rem; font-size: 1.5rem;" data-zh="有空時會做的事" data-en="Interests">Interests</h3>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="margin-bottom: 0.5rem;"><strong><span data-zh="棒球" data-en="Baseball">Baseball</span></strong> <span data-zh="— 因為打擊不好，練的是投手，偶像是Tyler Glasnow（因為他長得很像Cillian Murphy）。如果你在電資學院想打棒球的話，歡迎聯絡我！" data-en="— I am a pitcher, and my role model is Tyler Glasnow (aka Cillian Murphy). If you are in the College of EECS and want to play baseball, feel free to reach out!">— I am a pitcher, and my role model is Tyler Glasnow (aka Cillian Murphy). If you are in the College of EECS and want to play baseball, feel free to reach out!</span></p>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="margin-bottom: 0.5rem;"><strong><span data-zh="攝影" data-en="Photography">Photography</span></strong> <span data-zh="— 接觸攝影兩年多。首頁背景圖中有兩張是我自己的作品，另外兩張是我非常欣賞的深瀨昌久的作品，只是片源有點難找，非常推薦去看他的傳記電影" data-en="— I have been practicing photography for over two years. Two of the homepage background images are my own work, and the other two are by Masahisa Fukase, whose work I deeply admire. I also recommend watching ">— I have been practicing photography for over two years. Two of the homepage background images are my own work, and the other two are by Masahisa Fukase, whose work I deeply admire. I also recommend watching </span><em><span data-zh="" data-en="Ravens">Ravens</span></em><span data-zh="。我偶爾會在" data-en=", a biographical film about Fukase. Occasionally, I upload my photos to ">, a biographical film about Fukase. Occasionally, I upload my photos to </span><a href="https://www.flickr.com/photos/196291108@N06/page4" style="color: #fff; text-decoration: underline;">Flickr</a><span data-zh="存一些生活的軌跡，有興趣可以看看。" data-en=" — check them out if you're interested."> — check them out if you're interested.</span></p>
+                    </div>
+                    
+                    <div style="margin-bottom: 2rem;">
+                        <p style="margin-bottom: 1rem;"><strong><span data-zh="電影" data-en="Films">Films</span></strong> <span data-zh="— 如果電影也有MBTI的話，我應該會挑這四部：" data-en="— 4 films to know me:">— 4 films to know me:</span></p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 1rem;">
+                            <a href="https://www.imdb.com/title/tt19770238/?ref_=fn_all_ttl_8" target="_blank" style="text-decoration: none; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                <div style="background: rgba(255, 255, 255, 0.1); border-radius: 8px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                    <img src="https://media.vogue.com.tw/photos/64266e407f1bbda361b0709b/2:3/w_1920,c_limit/%E9%A6%96%E5%9C%96.jpeg" 
+                                         alt="Aftersun" style="width: 100%; height: 200px; object-fit: cover;">
+                                    <div style="padding: 10px;">
+                                        <h4 style="color: #fff; margin: 0; font-size: 0.9rem; font-family: 'Playfair Display', serif;">Aftersun</h4>
+                                        <p style="color: #ccc; margin: 5px 0 0 0; font-size: 0.8rem;">2022</p>
+                                    </div>
+                                </div>
+                            </a>
+                            
+                            <a href="https://www.imdb.com/title/tt1736633/" target="_blank" style="text-decoration: none; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                <div style="background: rgba(255, 255, 255, 0.1); border-radius: 8px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                    <img src="https://upload.wikimedia.org/wikipedia/en/a/a9/Oslo%2C_August_31st_poster.png" 
+                                         alt="Oslo August 31st" style="width: 100%; height: 200px; object-fit: cover;">
+                                    <div style="padding: 10px;">
+                                        <h4 style="color: #fff; margin: 0; font-size: 0.9rem; font-family: 'Playfair Display', serif;">Oslo, 31. August</h4>
+                                        <p style="color: #ccc; margin: 5px 0 0 0; font-size: 0.8rem;">2011</p>
+                                    </div>
+                                </div>
+                            </a>
+                            
+                            <a href="https://www.imdb.com/title/tt29279903/" target="_blank" style="text-decoration: none; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                <div style="background: rgba(255, 255, 255, 0.1); border-radius: 8px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                    <img src="https://media.vogue.com.tw/photos/67e1288f655e8d36192e94eb/master/w_1600,c_limit/MV5BZDRiYzE3YTYtZTcxYi00NTcyLTgxZmQtNWEyNzNjNDdjZmJjXkEyXkFqcGc@._V1_.jpg" 
+                                         alt="Happyend" style="width: 100%; height: 200px; object-fit: cover;">
+                                    <div style="padding: 10px;">
+                                        <h4 style="color: #fff; margin: 0; font-size: 0.9rem; font-family: 'Playfair Display', serif;">Happyend</h4>
+                                        <p style="color: #ccc; margin: 5px 0 0 0; font-size: 0.8rem;">空音央 (2017)</p>
+                                    </div>
+                                </div>
+                            </a>
+                            
+                            <a href="https://www.imdb.com/title/tt3469964/?ref_=fn_all_ttl_1" target="_blank" style="text-decoration: none; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                <div style="background: rgba(255, 255, 255, 0.1); border-radius: 8px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                    <img src="https://upload.wikimedia.org/wikipedia/zh/e/e7/Blind_Massage_poster.jpg" 
+                                         alt="Blind Massage" style="width: 100%; height: 200px; object-fit: cover;">
+                                    <div style="padding: 10px;">
+                                        <h4 style="color: #fff; margin: 0; font-size: 0.9rem; font-family: 'Playfair Display', serif;">Blind Massage (推拿)</h4>
+                                        <p style="color: #ccc; margin: 5px 0 0 0; font-size: 0.8rem;">Lou Ye (2014)</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 工作經驗 Timeline -->
+                    <div style="margin: 3rem 0;">
+                        <p style="margin-bottom: 1.5rem;"><strong><span data-zh="時間線" data-en="Experience Timeline">Experience Timeline</span></strong> <span data-zh="— 跟專業比較有關的歷程：" data-en="— My professional journey:">— My professional journey:</span></p>
+                        <div class="timeline-container">
+                            <!-- Timeline central line -->
+                            <div class="timeline-line"></div>
+                            
+                            <!-- Timeline Items -->
+                            <div class="timeline-item">
+                                <div class="timeline-node"></div>
+                                <div class="timeline-content">
+                                    <h4 data-zh="LLM Agent團隊實習生" data-en="LLM Agent Team Intern">LLM Agent Team Intern</h4>
+                                    <p class="timeline-date" data-zh="台達電子 • 2025年7月 - 至今" data-en="Delta Electronics, Inc. • Jul 2025 - Present">Delta Electronics, Inc. • Jul 2025 - Present</p>
+                                    <p class="timeline-description" data-zh="參與大型語言模型應用和智慧代理系統開發。" data-en="Working on Large Language Model applications and agent systems development.">Working on Large Language Model applications and agent systems development.</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-node"></div>
+                                <div class="timeline-content">
+                                    <h4 data-zh="教學助理 - 生成式AI與機器學習" data-en="Teaching Assistant - GenAI & ML">Teaching Assistant - GenAI & ML</h4>
+                                    <p class="timeline-date" data-zh="台灣大學 • 2025年9月 - 至今" data-en="National Taiwan University • Sep 2025 - Present">National Taiwan University • Sep 2025 - Present</p>
+                                    <p class="timeline-description" data-zh="李宏毅教授「生成式AI與機器學習概論」課程助教。" data-en="TA for &quot;Introduction to GenAI and ML&quot; course taught by Prof. Hung-Yi Lee.">TA for "Introduction to GenAI and ML" course taught by Prof. Hung-Yi Lee.</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-node"></div>
+                                <div class="timeline-content">
+                                    <h4 data-zh="研究專題 - 語音處理與機器學習實驗室" data-en="Research Program - SPML Lab">Research Program - SPML Lab</h4>
+                                    <p class="timeline-date" data-zh="台大，李宏毅教授指導 • 2025年2月 - 至今" data-en="NTU, advised by Prof. Hung-Yi Lee • Feb 2025 - Present">NTU, advised by Prof. Hung-Yi Lee • Feb 2025 - Present</p>
+                                    <p class="timeline-description" data-zh="探索語音模型相關的機制，開發母語語音增強應用。" data-en="Exploring Text-to-Speech and LLMs. Developed native speech enhancement application.">Exploring Text-to-Speech and LLMs. Developed native speech enhancement application.</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-node"></div>
+                                <div class="timeline-content">
+                                    <h4 data-zh="教學助理 - Python程式設計" data-en="Teaching Assistant - Python Programming">Teaching Assistant - Python Programming</h4>
+                                    <p class="timeline-date" data-zh="台大，吳沛遠教授 • 2025年2月 - 6月" data-en="NTU, Prof. Pei-Yuan Wu • Feb - Jun 2025">NTU, Prof. Pei-Yuan Wu • Feb - Jun 2025</p>
+                                    <p class="timeline-description" data-zh="「智慧醫學Python程式設計」課程助教。" data-en="TA for &quot;Python programming for intelligent medicine&quot; course.">TA for "Python programming for intelligent medicine" course.</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-node"></div>
+                                <div class="timeline-content">
+                                    <h4 data-zh="棒球隊隊長 🥈" data-en="Baseball Team Captain 🥈">Baseball Team Captain 🥈</h4>
+                                    <p class="timeline-date" data-zh="台大新生盃 • 2024年9月 - 12月" data-en="NTU Freshman Cup • Sep - Dec 2024">NTU Freshman Cup • Sep - Dec 2024</p>
+                                    <p class="timeline-description" data-zh="帶領棒球隊在2024新生盃獲得第二名。" data-en="Led the baseball team to second-place finish in the 2024 Freshman Cup.">Led the baseball team to second-place finish in the 2024 Freshman Cup.</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-node"></div>
+                                <div class="timeline-content">
+                                    <h4 data-zh="研究實習生 - 音樂資訊檢索" data-en="Research Intern - Music Information Retrieval">Research Intern - Music Information Retrieval</h4>
+                                    <p class="timeline-date" data-zh="中央研究院 - 蘇黎實驗室 • 2024年7月 - 8月" data-en="Academia Sinica - Su Li Lab • Jul - Aug 2024">Academia Sinica - Su Li Lab • Jul - Aug 2024</p>
+                                    <p class="timeline-description" data-zh="研究多音高音樂轉錄模型（MT3、CFP、PESTO），探索電腦視覺和大型語言模型在音頻轉錄的應用。" data-en="Researched multi-pitch music transcription models (MT3, CFP, PESTO). Explored CV and LLMs in audio transcription.">Researched multi-pitch music transcription models (MT3, CFP, PESTO). Explored CV and LLMs in audio transcription.</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-node"></div>
+                                <div class="timeline-content">
+                                    <h4 data-zh="電機工程學士" data-en="B.S. Electrical Engineering">B.S. Electrical Engineering</h4>
+                                    <p class="timeline-date" data-zh="台灣大學 • 2022年9月 - 至今" data-en="National Taiwan University • Sep 2022 - Present">National Taiwan University • Sep 2022 - Present</p>
+                                    <p class="timeline-description" data-zh="探索人工智慧、機器學習和訊號處理。" data-en="Exploring in AI, Machine Learning, and Signal Processing. Active in research and competitive programming.">Exploring in AI, Machine Learning, and Signal Processing. Active in research and competitive programming.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio 頁面 -->
+        <div class="page portfolio-page" data-page="2">
+            <div class="page-content">
+                <h1 class="page-title" data-zh="作品集" data-en="Portfolio">Portfolio</h1>
+                <p class="page-subtitle" data-zh="精選專案展示" data-en="Featured Projects">Featured Projects</p>
+                <div class="page-description">
+                    <p data-zh="以下是我參與開發的主要專案，涵蓋Agentic AI、ML和Web開發等領域。" data-en="Here are the main projects I've been involved in, spanning Agentic AI, ML, and web development.">
+                        Here are the main projects I've been involved in, spanning Agentic AI, ML, and web development.
+                    </p>
+                </div>
+                
+                <!-- 專案展示 -->
+                <div style="margin-top: 3rem; max-width: 900px;">
+                    <!-- Paper Master 專案 -->
+                    <div style="display: flex; gap: 2rem; margin-bottom: 3rem; background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.1); align-items: flex-start;">
+                        <div style="flex: 0 0 200px;">
+                            <div style="width: 200px; height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                <img src="https://opengraph.githubassets.com/1/snooow1029/paper_master" 
+                                     alt="Paper Master Repository" 
+                                     style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="color: #fff; margin-bottom: 0.5rem; font-family: 'Playfair Display', serif; font-size: 1.4rem;">Paper Master</h3>
+                            <p style="color: #ccc; margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.5;">Academic Paper Visualization Tool - An interactive tool similar to Connected Papers for visualizing academic paper relationships with AI-powered analysis and editable connection graphs.</p>
+                            <div style="margin-bottom: 1rem;">
+                                <span style="background: rgba(255, 255, 255, 0.1); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 8px;">Agentic AI</span>
+                                <span style="background: rgba(255, 255, 255, 0.1); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 8px;">Web Programming</span>
+                            </div>
+                            <a href="https://github.com/snooow1029/paper_master" target="_blank" style="color: #fff; text-decoration: none; font-size: 0.9rem; opacity: 0.8;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                                <i class="fab fa-github"></i> View on GitHub
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Native Speech Enhancer 專案 -->
+                    <div style="display: flex; gap: 2rem; margin-bottom: 3rem; background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.1); align-items: flex-start;">
+                        <div style="flex: 0 0 200px;">
+                            <div style="width: 200px; height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                <img src="https://opengraph.githubassets.com/1/snooow1029/Native-speaker-identification" 
+                                     alt="Native Speaker Identification Repository" 
+                                     style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="color: #fff; margin-bottom: 0.5rem; font-family: 'Playfair Display', serif; font-size: 1.4rem;">Native Speech Enhancer</h3>
+                            <p style="color: #ccc; margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.5;">AI-powered speech enhancement application using WavLM for feature extraction and linear models to analyze native vs. non-native speech patterns, with attribution analysis for pronunciation error detection.</p>
+                            <div style="margin-bottom: 1rem;">
+                                <span style="background: rgba(255, 255, 255, 0.1); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 8px;">Self-supervised Learning</span>
+                                <span style="background: rgba(255, 255, 255, 0.1); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 8px;">Explainable AI</span>
+                            </div>
+                            <a href="https://github.com/snooow1029/Native-speaker-identification" target="_blank" style="color: #fff; text-decoration: none; font-size: 0.9rem; opacity: 0.8;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                                <i class="fab fa-github"></i> View on GitHub
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Ganzin Iris Verification 專案 -->
+                    <div style="display: flex; gap: 2rem; margin-bottom: 2rem; background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.1); align-items: flex-start;">
+                        <div style="flex: 0 0 200px;">
+                            <div style="width: 200px; height: 150px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2); position: relative;">
+                                <img src="https://opengraph.githubassets.com/1/snooow1029/Ganzin_Iris_Final" 
+                                     alt="Ganzin Iris Final Repository" 
+                                     style="width: 100%; height: 100%; object-fit: cover;">
+                                <span style="position: absolute; top: 10px; right: 10px; background: #ffd700; color: #000; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; font-weight: bold;">🥇 1st</span>
+                            </div>
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="color: #fff; margin-bottom: 0.5rem; font-family: 'Playfair Display', serif; font-size: 1.4rem;">Ganzin Iris Verification <span style="color: #ffd700; font-size: 0.8rem;">🏆 First Place</span></h3>
+                            <p style="color: #ccc; margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.5;">Advanced iris verification system using Siamese architecture with GoogLeNet backbone, trained on multiple datasets including CASIA-Iris-Lamp and Ganzin-J7EF-Gaze. Won first place in final presentation.</p>
+                            <div style="margin-bottom: 1rem;">
+                                <span style="background: rgba(255, 255, 255, 0.1); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 8px;">Siamese Network</span>
+                                <span style="background: rgba(255, 255, 255, 0.1); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 8px;">CNN</span>
+                                <span style="background: rgba(255, 255, 255, 0.1); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 8px;">Explainable AI</span>
+                            </div>
+                            <a href="https://github.com/snooow1029/Ganzin_Iris_Final" target="_blank" style="color: #fff; text-decoration: none; font-size: 0.9rem; opacity: 0.8;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                                <i class="fab fa-github"></i> View on GitHub
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact 頁面 -->
+        <div class="page contact-page" data-page="3">
+            <div class="page-content">
+                <h1 class="page-title" data-zh="聯絡方式" data-en="Contact">Contact</h1>
+                <p class="page-subtitle" data-zh="讓我們開始合作吧！" data-en="Let's start collaborating!">Let's start collaborating!</p>
+                <div class="page-description">
+                    <p data-zh="如果您有任何專案想法或合作機會，歡迎與我聯絡。" data-en="If you have any project ideas or collaboration opportunities, feel free to contact me.">
+                        If you have any project ideas or collaboration opportunities, feel free to contact me.
+                    </p>
+                </div>
+
+                <!-- 聯絡資訊 -->
+                <div style="margin: 2rem 0; display: flex; flex-direction: column; gap: 1.5rem; align-items: center; max-width: 500px;">
+                    <a href="mailto:kaipnob@gmail.com" style="display: flex; align-items: center; gap: 15px; color: #fff; text-decoration: none; padding: 12px 20px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease; width: 100%;" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                        <i class="fas fa-envelope" style="font-size: 1.2rem; width: 20px; text-align: center;"></i>
+                        <span style="font-family: 'Libre Baskerville', 'Noto Serif TC', serif; font-weight: 500;">Gmail</span>
+                    </a>
+
+                    <a href="https://github.com/snooow1029" target="_blank" style="display: flex; align-items: center; gap: 15px; color: #fff; text-decoration: none; padding: 12px 20px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease; width: 100%;" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                        <i class="fab fa-github" style="font-size: 1.2rem; width: 20px; text-align: center;"></i>
+                        <span style="font-family: 'Libre Baskerville', 'Noto Serif TC', serif; font-weight: 500;">GitHub</span>
+                    </a>
+
+                    <a href="https://www.linkedin.com/in/kai-d-1621742a9/" target="_blank" style="display: flex; align-items: center; gap: 15px; color: #fff; text-decoration: none; padding: 12px 20px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease; width: 100%;" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                        <span style="font-size: 1.2rem;">�</span>
+                        <span style="font-family: 'Libre Baskerville', 'Noto Serif TC', serif; font-weight: 500;">LinkedIn</span>
+                    </a>
+
+                    <a href="https://www.instagram.com/j.k.snowling/" target="_blank" style="display: flex; align-items: center; gap: 15px; color: #fff; text-decoration: none; padding: 12px 20px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease; width: 100%;" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                        <i class="fab fa-instagram" style="font-size: 1.2rem; width: 20px; text-align: center;"></i>
+                        <span style="font-family: 'Libre Baskerville', 'Noto Serif TC', serif; font-weight: 500;">Instagram</span>
+                    </a>
+
+                    <a href="https://www.facebook.com/dong.jia.kai" target="_blank" style="display: flex; align-items: center; gap: 15px; color: #fff; text-decoration: none; padding: 12px 20px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease; width: 100%;" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                        <i class="fab fa-facebook" style="font-size: 1.2rem; width: 20px; text-align: center;"></i>
+                        <span style="font-family: 'Libre Baskerville', 'Noto Serif TC', serif; font-weight: 500;">Facebook</span>
+                    </a>
+
+                    <a href="https://www.flickr.com/photos/196291108@N06/" target="_blank" style="display: flex; align-items: center; gap: 15px; color: #fff; text-decoration: none; padding: 12px 20px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease; width: 100%;" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                        <i class="fab fa-flickr" style="font-size: 1.2rem; width: 20px; text-align: center;"></i>
+                        <span style="font-family: 'Libre Baskerville', 'Noto Serif TC', serif; font-weight: 500;">Flickr</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TypeScript compiled JavaScript -->
+    <script type="module" src="dist/main.js"></script>
+</body>
+</html>
