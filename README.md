@@ -1,179 +1,238 @@
 # Kai's Portfolio Website
 
-Personal portfolio website for **Jia-Kai Dong** - EE Student & AI Researcher at National Taiwan University.
+🌐 **Live Website**: [https://snooow1029.github.io/](https://snooow1029.github.io/)
 
-![Portfolio Screenshot](./assets/webpage.png)
+Personal portfolio website for **Jia-Kai Dong (董家愷)** - Electrical Engineering Student & AI Researcher at National Taiwan University.
 
-## 🚀 Features
+![Portfolio Preview](./assets/webpage.png)
 
-- **Modern Design**: Clean, artistic design inspired by Daido Moriyama's photography style
-- **Responsive Layout**: Optimized for desktop and mobile devices
-- **TypeScript**: Fully typed JavaScript for better development experience
-- **Multilingual**: Support for English and Traditional Chinese
-- **Smooth Animations**: Page transitions and timeline animations
-- **Interactive Timeline**: Professional experience and project timeline
-- **Photography Gallery**: Personal photography work showcase
+## ✨ Features
 
-## 🎨 Design Philosophy
+- 🎨 **Artistic Design**: Inspired by Japanese photography aesthetics
+- 📱 **Responsive Layout**: Works seamlessly on desktop and mobile
+- 🌐 **Bilingual Support**: Traditional Chinese / English language switching
+- ⚡ **Fast Loading**: Self-contained with embedded CSS and JavaScript
+- 🔄 **Smooth Animations**: Page transitions and interactive timeline
+- 📸 **Photography Gallery**: Personal photographic works showcase
+- 🎯 **Interactive Timeline**: Professional experience and education
 
-The website adopts a high-contrast black and white aesthetic inspired by legendary photographer Daido Moriyama, reflecting the intersection of technology and art that defines my work.
+## 🚀 Quick Start
 
-## 🛠 Tech Stack
+### Option 1: View Online (Recommended)
+Simply visit: **[https://snooow1029.github.io/](https://snooow1029.github.io/)**
 
-- **Frontend**: HTML5, CSS3, TypeScript
-- **Fonts**: 
-  - Headers: Futura + Noto Sans TC
-  - Body: Libre Baskerville + Noto Serif TC
-- **Animation**: CSS transitions + Intersection Observer API
-- **Build Tool**: TypeScript Compiler
-- **Server**: Python HTTP Server
+### Option 2: Run Locally
+
+#### Method A: Direct File Access (Simplest)
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/snooow1029/snooow1029.github.io.git
+   cd snooow1029.github.io
+   ```
+
+2. Open the website:
+   ```bash
+   # Option 1: Open in default browser
+   open index.html        # macOS
+   start index.html       # Windows
+   xdg-open index.html    # Linux
+   
+   # Option 2: Double-click index.html in file manager
+   ```
+
+#### Method B: Local Development Server
+1. Clone and setup:
+   ```bash
+   git clone https://github.com/snooow1029/snooow1029.github.io.git
+   cd snooow1029.github.io
+   npm install  # Optional: for development dependencies
+   ```
+
+2. Start local server:
+   ```bash
+   # Method 1: Using npm script
+   npm run serve
+   
+   # Method 2: Using Python (more reliable)
+   python3 -m http.server 8080
+   
+   # Method 3: Using Node.js http-server
+   npx http-server -p 8080
+   ```
+
+3. Open in browser: `http://localhost:8080`
+
+#### Method C: VS Code Live Server
+1. Open the project in VS Code
+2. Install "Live Server" extension
+3. Right-click on `index.html` → "Open with Live Server"
+
+## 🛠️ Development
+
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
+- Python 3 (for local server)
+
+### Development Workflow
+
+1. **Clone and setup**:
+   ```bash
+   git clone https://github.com/snooow1029/snooow1029.github.io.git
+   cd snooow1029.github.io
+   npm install
+   ```
+
+2. **Development mode** (TypeScript compilation):
+   ```bash
+   # Watch for TypeScript changes
+   npm run dev
+   
+   # In another terminal, start server
+   npm run serve
+   ```
+
+3. **Make changes**:
+   - Edit TypeScript files in `src/` directory
+   - Modify HTML content in `index.html`
+   - Update styles (embedded in HTML)
+   - Add/replace images in `assets/` folder
+
+4. **Build and test**:
+   ```bash
+   npm run build    # Compile TypeScript to JavaScript
+   npm run start    # Build and serve
+   ```
+
+5. **Deploy**:
+   ```bash
+   git add .
+   git commit -m "Update portfolio"
+   git push origin main
+   # GitHub Pages will automatically deploy the changes
+   ```
 
 ## 📁 Project Structure
 
 ```
-kai-portfolio/
-├── src/                       # TypeScript source code
-│   ├── classes/
-│   │   ├── PageFlipper.ts     # Page navigation logic
-│   │   ├── TimelineAnimator.ts # Timeline animations
-│   │   └── LanguageManager.ts # Language switching
-│   ├── types/
-│   │   └── index.ts          # TypeScript type definitions
-│   └── main.ts               # Main application entry point
-├── dist/                     # Compiled JavaScript files
-│   ├── classes/              # Compiled class modules
-│   └── main.js               # Main compiled entry point
-├── assets/                   # Static assets
-│   ├── DSC04162-1.jpg       # Personal photography
-│   ├── DSC04190-1.jpg       # Personal photography  
-│   ├── webpage.png          # Project screenshot
-│   ├── 深瀨昌久_學生.png     # Masahisa Fukase artwork
-│   └── 深瀨昌久_鴉.jpeg      # Masahisa Fukase artwork
-├── artistic-portfolio.html   # Main HTML file
-├── styles.css               # Legacy CSS file (embedded in HTML)
-├── script.js                # Legacy JavaScript file
-├── script.ts                # Legacy TypeScript file
-├── tsconfig.json            # TypeScript configuration
-├── package.json             # Project dependencies & scripts
-├── package-lock.json        # Locked dependency versions
-├── .gitignore              # Git ignore rules
-├── LICENSE                 # MIT License
-└── README.md               # Project documentation
+snooow1029.github.io/
+├── index.html              # Main entry point (self-contained)
+├── artistic-portfolio.html # Backup/alternative entry point
+├── assets/                 # Static assets
+│   ├── DSC04162-1.jpg     # Personal photography
+│   ├── DSC04190-1.jpg     # Personal photography  
+│   ├── webpage.png        # Screenshot for README
+│   ├── 深瀨昌久_學生.png   # Art reference images
+│   └── 深瀨昌久_鴉.jpeg    # Art reference images
+├── src/                   # TypeScript source code
+│   ├── classes/           # TypeScript classes
+│   │   ├── LanguageManager.ts    # Language switching logic
+│   │   ├── PageFlipper.ts        # Page navigation
+│   │   └── TimelineAnimator.ts   # Timeline animations
+│   ├── types/             # Type definitions
+│   └── main.ts           # Main TypeScript entry
+├── dist/                  # Compiled JavaScript (generated)
+├── package.json          # npm configuration
+├── tsconfig.json         # TypeScript configuration
+├── script.js             # Standalone JavaScript (legacy)
+├── script.ts             # Standalone TypeScript (legacy)
+├── styles.css            # Standalone CSS (legacy)
+└── README.md             # This file
 ```
 
-## 🚀 Getting Started
+## 🎨 Design & Typography
 
-### Prerequisites
+### Fonts
+- **Headers/Navigation**: Bodoni MT with Noto Sans TC fallback
+- **Body Text**: Libre Baskerville with Noto Serif TC fallback
+- **Chinese Text**: Noto Sans TC and Noto Serif TC
 
-- Node.js (v16 or higher)
-- Python 3.x
-- Modern web browser
+### Color Scheme
+- **Primary**: Black & White (inspired by Japanese street photography)
+- **Accent**: Subtle grays for depth and hierarchy
 
-### Installation
+### Photography Style
+Inspired by **Daido Moriyama** and **Masahisa Fukase** - masters of Japanese street photography.
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/snooow1029/wp1141.git
-   cd wp1141/hw1
-   ```
+## 🌐 Architecture & Deployment
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+### GitHub Pages Integration
+- **Automatic Deployment**: Push to `main` branch triggers deployment
+- **Custom Domain Ready**: Can be configured in repository settings
+- **HTTPS Enforced**: Secure connection by default
 
-3. **Build TypeScript**
-   ```bash
-   npm run build
-   ```
+### Self-Contained Design
+- All CSS and JavaScript are embedded in HTML files
+- No external CDN dependencies
+- Works offline after initial load
+- Fast loading with minimal HTTP requests
 
-4. **Start development server**
-   ```bash
-   npm run serve
-   ```
+## 🔧 Troubleshooting
 
-5. **Open in browser**
-   Navigate to `http://localhost:8080`
+### Common Issues
 
-## 🔧 Development
+**1. TypeScript compilation errors:**
+```bash
+# Clean and rebuild
+npm run clean
+npm run build
+```
 
-### Available Scripts
+**2. Server won't start in WSL:**
+```bash
+# Use Python server directly
+python3 -c "import http.server; import socketserver; httpd = socketserver.TCPServer(('', 8080), http.server.SimpleHTTPRequestHandler); print('Serving at http://localhost:8080'); httpd.serve_forever()"
+```
 
-- `npm run build` - Compile TypeScript to JavaScript
-- `npm run dev` - Watch mode for development
-- `npm run serve` - Start local HTTP server
-- `npm run start` - Build and serve
-- `npm run clean` - Remove compiled files
-- `npm run type-check` - Type checking without compilation
+**3. Assets not loading:**
+- Ensure you're accessing via `http://localhost:8080`, not `file://`
+- Check that `assets/` folder is in the same directory as `index.html`
 
-### Development Workflow
+**4. Language switching not working:**
+- Open browser developer tools and check console for JavaScript errors
+- Ensure TypeScript has been compiled (`npm run build`)
 
-1. **Make changes** to TypeScript files in `src/`
-2. **Run** `npm run dev` for automatic compilation
-3. **Serve** the files with `npm run serve`
-4. **Test** in browser at `localhost:8080`
+## 📄 Scripts Reference
 
-## 📱 Features Overview
+```json
+{
+  "build": "tsc",                    // Compile TypeScript
+  "dev": "tsc --watch",              // Watch mode compilation
+  "serve": "python3 -m http.server 8080",  // Start development server
+  "start": "npm run build && npm run serve", // Build and serve
+  "clean": "rm -rf dist",            // Clean compiled files
+  "type-check": "tsc --noEmit"       // Type checking only
+}
+```
 
-### Page Navigation
-- **Full-page transitions** with smooth animations
-- **Keyboard support** (Arrow keys)
-- **Mouse wheel navigation** with content scroll priority
-- **Touch gestures** for mobile devices
+## 🤝 Contributing
 
-### Timeline Animation
-- **Intersection Observer** for scroll-triggered animations
-- **Alternating layout** for better visual flow
-- **Responsive design** adapts to mobile screens
-
-### Language Support
-- **Bilingual content** (English/Traditional Chinese)
-- **Dynamic switching** without page reload
-- **Proper font handling** for different languages
-
-## 🎯 About the Author
-
-**Jia-Kai Dong** is a senior student in Electrical Engineering at National Taiwan University, passionate about AI, machine learning, and speech processing. Currently conducting research at Prof. Hung-Yi Lee's lab and interning with the LLM Agent Team at Delta Electronics.
-
-### Interests
-- 🤖 **AI & Machine Learning**: Speech processing, LLMs, deep learning
-- ⚾ **Baseball**: Pitcher, inspired by Tyler Glasnow
-- 📸 **Photography**: 2+ years experience, influenced by Masahisa Fukase
-- 🎬 **Cinema**: Art house films and international cinema
-
-### Experience Highlights
-- **LLM Agent Team Intern** at Delta Electronics (2025-Present)
-- **Teaching Assistant** for GenAI & ML at NTU (2025-Present)
-- **Research Program** at SPML Lab, NTU (2025-Present)
-- **Research Intern** at Academia Sinica (Summer 2024)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📞 Contact
 
+- **Author**: Jia-Kai Dong (董家愷)
 - **Email**: [kaipnob@gmail.com](mailto:kaipnob@gmail.com)
-- **GitHub**: [github.com/snooow1029](https://github.com/snooow1029)
-- **LinkedIn**: [linkedin.com/in/kai-d-1621742a9](https://www.linkedin.com/in/kai-d-1621742a9/)
-- **Photography**: [flickr.com/photos/196291108@N06](https://www.flickr.com/photos/196291108@N06/)
+- **GitHub**: [@snooow1029](https://github.com/snooow1029)
+- **LinkedIn**: [Kai Dong](https://www.linkedin.com/in/kai-d-1621742a9/)
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## 🏆 Acknowledgments
 
-- **Masahisa Fukase** - Photography inspiration and background images
-- **Daido Moriyama** - Design aesthetic inspiration
-- **Prof. Hung-Yi Lee** - Academic mentorship
-- **Delta Electronics** - Professional development opportunity
-
-## 🔄 Version History
-
-- **v1.0.0** (2025-01-09)
-  - Initial release
-  - TypeScript conversion
-  - Full responsive design
-  - Multilingual support
-  - Timeline animations
+- **Photography Inspiration**: Daido Moriyama, Masahisa Fukase
+- **Typography**: Bodoni MT, Libre Baskerville font families
+- **Hosting**: GitHub Pages
+- **Development**: TypeScript, Modern Web Standards
 
 ---
 
-*Built with ❤️ and TypeScript by Jia-Kai Dong*
+**⭐ If you like this portfolio, please consider giving it a star!**
+
+*Built with ❤️ using TypeScript and modern web technologies*
