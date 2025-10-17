@@ -72,47 +72,6 @@ export class PageFlipper {
       }
     });
 
-    // Mouse wheel - prioritize content scrolling
-    window.addEventListener('wheel', (e: WheelEvent) => {
-      if (this.isAnimating) return;
-
-      // Check if current page has scrollable content
-      const currentPageElement = document.querySelector('.page.active .page-content') as HTMLElement;
-      if (currentPageElement) {
-        const isScrollable = currentPageElement.scrollHeight > currentPageElement.clientHeight;
-        
-        if (isScrollable) {
-          const atTop = currentPageElement.scrollTop === 0;
-          const atBottom = currentPageElement.scrollTop + currentPageElement.clientHeight >= currentPageElement.scrollHeight - 1;
-          
-          // Prioritize content scrolling
-          if ((e.deltaY > 0 && !atBottom) || (e.deltaY < 0 && !atTop)) {
-            return; // Allow default scroll behavior
-          }
-          
-          // Only switch pages if wheel movement is significant
-          if (Math.abs(e.deltaY) < 50) {
-            return;
-          }
-        }
-      }
-
-      // Prevent default scroll behavior, execute page switch
-      e.preventDefault();
-
-      if (this.wheelTimeout) {
-        clearTimeout(this.wheelTimeout);
-      }
-      
-      this.wheelTimeout = window.setTimeout(() => {
-        if (e.deltaY > 0) {
-          this.nextPage();
-        } else {
-          this.prevPage();
-        }
-      }, 150);
-    }, { passive: false });
-
     // Keyboard arrow keys
     window.addEventListener('keydown', (e: KeyboardEvent) => {
       if (this.isAnimating) return;
